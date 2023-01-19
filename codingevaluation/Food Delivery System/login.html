@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./CSS/styl.css">
+   
+</head>
+<body>
+    <div id="header"></div>
+    <h1>Login</h1>
+        <form action="" onsubmit="Login(event)" id="login-form">
+            <input type="text" id="pas" placeholder="Password" name="" >
+              <input type="text" id="use" placeholder="Username">
+              <input type="submit" name="" id="">
+        </form>
+    </div>
+</body>
+</html>
+<script type="module">
+    import {buttons} from "./Components/buttons.js"
+    let heading=document.getElementById("header");
+    heading.innerHTML=buttons();
+</script>
+<script>
+      function Login(event){
+          console.log(event);
+        event.preventDefault();
+        let form =document.getElementById("login-form");
+        let userData={
+            username:form.use.value,
+            password:form.pas.value,
+           
+        };
+        let data_to_send=JSON.stringify(userData);
+        console.log(data_to_send);
+        fetch("https://masai-api-mocker.herokuapp.com/auth/login",{
+        method:'POST',
+        body:data_to_send,
+        headers:{
+                "Content-Type": "application/json",
+            },
+        })
+        .then ((res)=>{
+            return res.json();
+        })
+        .then((res)=>{
+            console.log("before calling fetchData"+res);
+            fetchData(userData.username,res)
+        })
+        .catch(e=>{
+            console.log("error1"+e);
+        })
+        function fetchData(username,res){
+            console.log(username,res);
+            fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+                headers:{
+                    "Content-Type":"application/json",
+                    Authorization: `Bearer ${res.token}`,
+                },
+            })
+            .then ((res)=>{
+                console.log("without .json"+res);
+                return res.json();
+            })
+            .then((res)=>{
+                if(localStorage.getItem("username")==null){
+             localStorage.setItem("usernme",JSON.stringify());
+         }
+         let currentusername=res.username;
+         localStorage.setItem("username",JSON.stringify(currentusername));
+        // window.location.href="./index.html"
+        console.log("after cloling fetchData"+res);
+
+
+            })
+            .catch(e=>{
+                console.log("error2"+e);
+            })
+        }
+
+    }
+
+</script>
